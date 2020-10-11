@@ -4,11 +4,19 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import { configureStore } from '@reduxjs/toolkit';
+import reducer from './reducers';
+import { Provider } from 'react-redux';
+
+const store = configureStore({
+  reducer,
+  devTools: process.env.NODE_ENV !== 'production',
+})
 
 ReactDOM.render(
-  <React.StrictMode>
+  <Provider store={store}>
     <App />
-  </React.StrictMode>,
+  </Provider>,
   document.getElementById('root')
 );
 
