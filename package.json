@@ -8,10 +8,12 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "bootstrap": "^4.5.2",
+    "lodash": "^4.17.20",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-redux": "^7.2.1",
     "react-scripts": "3.4.3",
+    "react-sortable-tree": "^2.8.0",
     "redux": "^4.0.5"
   },
   "scripts": {
