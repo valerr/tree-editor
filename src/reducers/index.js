@@ -7,7 +7,7 @@ const reducer = createReducer({}, {
     const { treeData } = action.payload;
     return {
       nodes: [...treeData],
-    }
+    };
   },
 });
 

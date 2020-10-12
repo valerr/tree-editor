@@ -1,52 +1,55 @@
+/* eslint-disable react/jsx-filename-extension */
 import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App.jsx';
-import * as serviceWorker from './serviceWorker';
-import { configureStore } from '@reduxjs/toolkit';
-import reducer from './reducers';
-import { Provider } from 'react-redux';
-import { types } from './types';
-import { persistStore, persistReducer } from 'redux-persist'
+import { persistStore, persistReducer } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
 import storage from 'redux-persist/lib/storage';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import './index.css';
+import App from './App.jsx';  // eslint-disable-line
+import * as serviceWorker from './serviceWorker';
+
+import reducer from './reducers';
+
+import types from './types';
 
 const preloadedState = {
   nodes: [
     {
-    id: 1,
-    title: 'project',
-    // expanded: true,
-    type: types.cat,
-    removable: false,
-    children: [
-      { 
-        id: 2,
-        title: 'package.json',
-        type: types.dog,
-        removable: true,
-        children: [],
-      },
-      {
-        id: 3,
-        type: types.dog,
-        title: 'src',
-        // expanded: true,
-        removable: true,
-        children: [
-          {
-            id: 4,
-            title: 'index.js',
-            type: types.cat,
-            removable: true,
-          }
-        ]
-      }
-    ]
-  }
- ],
-}
+      id: 1,
+      title: 'project',
+      // expanded: true,
+      type: types.cat,
+      removable: false,
+      children: [
+        {
+          id: 2,
+          title: 'package.json',
+          type: types.dog,
+          removable: true,
+          children: [],
+        },
+        {
+          id: 3,
+          type: types.dog,
+          title: 'src',
+          // expanded: true,
+          removable: true,
+          children: [
+            {
+              id: 4,
+              title: 'index.js',
+              type: types.cat,
+              removable: true,
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
 
 const persistConfig = {
   key: 'root',
@@ -60,7 +63,6 @@ const store = configureStore({
   preloadedState,
 });
 
-
 const persistor = persistStore(store);
 
 ReactDOM.render(
@@ -69,7 +71,7 @@ ReactDOM.render(
       <App />
     </PersistGate>
   </Provider>,
-  document.getElementById('root')
+  document.getElementById('root'),
 );
 
 // If you want your app to work offline and load faster, you can change
