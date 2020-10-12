@@ -8,6 +8,9 @@ import { configureStore } from '@reduxjs/toolkit';
 import reducer from './reducers';
 import { Provider } from 'react-redux';
 import { types } from './types';
+import { persistStore, persistReducer } from 'redux-persist'
+import { PersistGate } from 'redux-persist/integration/react';
+import storage from 'redux-persist/lib/storage';
 
 const preloadedState = {
   nodes: [
@@ -45,15 +48,26 @@ const preloadedState = {
  ],
 }
 
+const persistConfig = {
+  key: 'root',
+  storage,
+};
+
+const persistedReducer = persistReducer(persistConfig, reducer);
 const store = configureStore({
-  reducer,
+  reducer: persistedReducer,
   devTools: process.env.NODE_ENV !== 'production',
   preloadedState,
-})
+});
+
+
+const persistor = persistStore(store);
 
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+    <PersistGate loading={null} persistor={persistor}>
+      <App />
+    </PersistGate>
   </Provider>,
   document.getElementById('root')
 );
