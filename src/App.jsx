@@ -1,11 +1,13 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useState } from 'react';
-import SortableTree, { changeNodeAtPath, removeNode, addNodeUnderParent } from 'react-sortable-tree';
+import SortableTree from 'react-sortable-tree';
 import 'react-sortable-tree/style.css';
 import { useSelector, useDispatch } from 'react-redux';
-import { uniqueId } from 'lodash';
+
 import types from './types';
-import { changeTree } from './actions';
+import {
+  changeTree, changeNode, addNode, removeNode,
+} from './actions';
 import catIcon from './assets/CAT.svg';
 import dogIcon from './assets/DOG.svg';
 import birdIcon from './assets/BIRD.svg';
@@ -14,7 +16,6 @@ import './App.css';
 function App() {
   const nodes = useSelector((state) => state.nodes);
   const dispatch = useDispatch();
-  const getNodeKey = ({ treeIndex }) => treeIndex;
   const [editingNode, setEditing] = useState({ treeIndex: null, name: null, type: null });
 
   const typeIcon = {
@@ -24,7 +25,7 @@ function App() {
     default: catIcon,
   };
 
-  const changeNode = ({ node, path }) => ({
+  const renderEditableNode = ({ node, path }) => ({
     title: (
       <>
         <div className="d-inline">
@@ -57,19 +58,16 @@ function App() {
           className="ml-2 btn btn-sm p-1"
           onClick={() => {
             setEditing({ treeIndex: null });
-            const newTreeData = changeNodeAtPath({
-              treeData: nodes,
-              path,
-              getNodeKey,
-              newNode: { ...node, title: editingNode.name, type: editingNode.type },
-            });
-            dispatch(changeTree({ treeData: newTreeData }));
+            dispatch(changeNode({
+              node, path, newName: editingNode.name, newType: editingNode.type,
+            }));
           }}
         >
           <svg width="1.8em" height="1.8em" viewBox="0 0 16 16" className="bi bi-check2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
             <path fillRule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
           </svg>
         </button>
+
         <button
           type="button"
           className="btn btn-sm p-1"
@@ -83,8 +81,53 @@ function App() {
         </button>
       </>
     ),
-  }
-  );
+  });
+
+  const renderNode = (treeIndex, node, path) => {
+    if (editingNode.treeIndex === treeIndex) {
+      return renderEditableNode({ node, path, treeIndex });
+    }
+    return {
+      title: (
+        <>
+          <div className="d-inline mr-1">
+            <img alt={node.type} className="node-type-icon" src={typeIcon[node.type]} />
+            {node.title}
+          </div>
+
+          <button type="button" className="mx-3 btn btn-sm" onClick={() => setEditing({ treeIndex, name: node.title, type: node.type })}>
+            <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" className="bi bi-pencil-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path fillRule="evenodd" d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z" />
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            className="btn btn-sm p-1"
+            onClick={() => {
+              dispatch(addNode({ parentKey: treeIndex }));
+            }}
+          >
+            <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" className="bi bi-plus-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path fillRule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            className="btn btn-sm p-1"
+            onClick={() => {
+              dispatch(removeNode({ node, path }));
+            }}
+          >
+            <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" className="bi bi-dash-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path fillRule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1h-7z" />
+            </svg>
+          </button>
+        </>
+      ),
+    };
+  };
 
   return (
     <div>
@@ -94,65 +137,7 @@ function App() {
           onChange={(treeData) => {
             dispatch(changeTree({ treeData }));
           }}
-          generateNodeProps={({ node, path, treeIndex }) => {
-            if (editingNode.treeIndex === treeIndex) {
-              return changeNode({ node, path, treeIndex });
-            }
-            return {
-              title: (
-                <>
-                  <div className="d-inline mr-1">
-                    <img alt={node.type} className="node-type-icon" src={typeIcon[node.type]} />
-                    {node.title}
-                  </div>
-                  <button type="button" className="mx-3 btn btn-sm" onClick={() => setEditing({ treeIndex, name: node.title, type: node.type })}>
-                    <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" className="bi bi-pencil-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                      <path fillRule="evenodd" d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z" />
-                    </svg>
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-sm p-1"
-                    onClick={() => {
-                      const newNode = {
-                        id: uniqueId(),
-                        title: 'untitled',
-                        type: types.default,
-                        removable: true,
-                        children: [],
-                      };
-                      const newTreeData = addNodeUnderParent({
-                        treeData: nodes,
-                        newNode,
-                        getNodeKey,
-                        parentKey: treeIndex,
-                      });
-                      dispatch(changeTree({ treeData: [...newTreeData.treeData] }));
-                    }}
-                  >
-                    <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" className="bi bi-plus-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                      <path fillRule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
-                    </svg>
-                  </button>
-
-                  <button
-                    type="button"
-                    className="btn btn-sm p-1"
-                    onClick={() => {
-                      if (node.removable) {
-                        const newTreeData = removeNode({ treeData: nodes, path, getNodeKey });
-                        dispatch(changeTree({ treeData: newTreeData.treeData }));
-                      }
-                    }}
-                  >
-                    <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" className="bi bi-dash-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                      <path fillRule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1h-7z" />
-                    </svg>
-                  </button>
-                </>
-              ),
-            };
-          }}
+          generateNodeProps={({ node, path, treeIndex }) => renderNode(treeIndex, node, path)}
         />
       </div>
     </div>
