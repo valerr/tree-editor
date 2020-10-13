@@ -1,24 +1,5 @@
-.btn.add {
- background-image: url("./add.svg");
- background-size: 80%;
- background-repeat: no-repeat;
- background-position: center;
-}
-
-.btn.remove {
-  background-image: url("./remove.svg");
-  background-size: 80%;
- background-repeat: no-repeat;
- background-position: center;
- }
-
- .node-name img {
+ .node-type-icon {
   height: 25px;
   margin-bottom: 5px;
   margin-right: 10px;
- }
-
- .edit img {
-  height: 20px;
-  margin-bottom: 5px;
  }
