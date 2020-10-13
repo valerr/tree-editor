@@ -25,7 +25,7 @@ const preloadedState = {
       children: [
         {
           id: 2,
-          title: 'package.json',
+          title: 'animal',
           type: types.dog,
           removable: true,
           children: [],
@@ -33,13 +33,13 @@ const preloadedState = {
         {
           id: 3,
           type: types.dog,
-          title: 'src',
+          title: 'another animal',
           // expanded: true,
           removable: true,
           children: [
             {
               id: 4,
-              title: 'index.js',
+              title: 'pet',
               type: types.cat,
               removable: true,
             },

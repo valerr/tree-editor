@@ -29,7 +29,7 @@ function App() {
     title: (
       <>
         <div className="d-inline">
-          <img alt={node.type} className="node-type-icon" src={typeIcon[node.type]} />
+          <img alt={editingNode.type} className="node-type-icon" src={typeIcon[editingNode.type]} />
           <input
             className="form-control form-control-sm w-auto d-inline mt-1 mr-1"
             value={editingNode.name}
