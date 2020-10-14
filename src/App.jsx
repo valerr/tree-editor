@@ -129,9 +129,49 @@ function App() {
     };
   };
 
+  const downloadTree = () => {
+    const element = document.createElement('a');
+    const file = new Blob([JSON.stringify(nodes)], { type: 'application/json;charset=utf-8' });
+    element.href = URL.createObjectURL(file);
+    element.download = 'tree.json';
+    document.body.appendChild(element);
+    element.click();
+  };
+
   return (
     <div>
-      <div className="App" style={{ height: 800 }}>
+      <div className="App">
+        <div className="d-flex">
+          <form>
+            <div className="form-group">
+              <label htmlFor="downloadTree">
+                Save
+                <input type="button" value="Save" className="form-control btn btn-sm btn-light" id="downloadTree" onClick={() => downloadTree()} />
+              </label>
+            </div>
+          </form>
+          <form className="ml-4">
+            <div className="form-group">
+              <label htmlFor="uploadTree">
+                Open
+                <input
+                  type="file"
+                  name="uploadTree"
+                  className="form-control-file"
+                  id="uploadTree"
+                  onChange={(event) => {
+                    const file = event.target.files[0];
+                    const reader = new FileReader();
+                    reader.readAsText(file);
+                    reader.onload = () => {
+                      dispatch(changeTree({ treeData: [...JSON.parse(reader.result)] }));
+                    };
+                  }}
+                />
+              </label>
+            </div>
+          </form>
+        </div>
         <SortableTree
           treeData={nodes}
           onChange={(treeData) => {
