@@ -141,15 +141,15 @@ function App() {
   return (
     <div>
       <div className="App">
-        <div className="d-flex flex-row mb-3">
-          <div className="input-group m-2 w-25">
+        <div className="d-flex flex-column mb-3">
+          <div className="input-group m-2 w-50">
             <div className="custom-file">
               <button type="button" className="custom-file-input btn" id="inputGroupFile" onClick={() => downloadTree()} />
               <label className="custom-file-label" htmlFor="inputGroupFile">Save file</label>
             </div>
           </div>
 
-          <div className="input-group m-2 w-25">
+          <div className="input-group m-2 w-50">
             <div className="custom-file cursor-pointer">
               <input
                 type="file"
